@@ -7,30 +7,45 @@ class Node:
         # map of value -> node
         self.nodes = {}
 
+def add_to_node(node, words):
+    while words:
+        word = words.popleft()
+        add_rec(words, word, 0, node)
+
+
+def add_rec(words, word, index, node):
+    if index == len(word):
+        assert node.terminal == False, f"Duplicate words are not allowed. {word}"
+        node.terminal = True
+        return
+    letter = word[index]
+    if letter in node.nodes:
+        node = node.nodes[letter]
+    else:
+        node.nodes[letter] = Node(False)
+        node = node.nodes[letter]
+    add_rec(words, word, index+1, node)
+
+    # Recursive implementation. When a word is added, start at that node for the next word.
+    # If the path isn't in the new word, then back up one level and try, etc.
+    while words:
+        new_word = words.popleft()
+        if new_word.startswith(word[:index + 1]):
+            add_rec(words, new_word, index + 1, node)
+        else:
+            words.appendleft(new_word)
+            break
+
 
 class Trie:
     def __init__(self, word_list):
         start = time.time()
         self.root = Node(False)
-        # TODO: this could be much faster if we new the incoming word list was sorted, which we do.
-        # Try a recursive implementation. When a word is added, start at that node for the next word.
-        # If the path isn't in the new word, then back up one level and try, etc.
-        for word in word_list:
-            self.add(word)
+        words = deque()
+        words.extendleft(word_list)
+        add_to_node(self.root, words)
         end = time.time()
         print(f"Building trie took {end-start} seconds.")
-    
-    def add(self, word):
-        cur_node = self.root
-        for letter in word:
-            if letter in cur_node.nodes:
-                cur_node = cur_node.nodes[letter]
-            else:
-                cur_node.nodes[letter] = Node(False)
-                cur_node = cur_node.nodes[letter]
-        # after going through the whole word, update the terminal value on the last node
-        assert cur_node.terminal == False, f"Duplicate words are not allowed. {letter}"
-        cur_node.terminal = True
     
     def get_words(self):
         start = time.time()
@@ -89,3 +104,8 @@ class Trie:
         return words
 
 
+
+if __name__ == '__main__':
+    word_list = ['a', 'add', 'additional']
+    t = Trie(word_list)
+    print(t.get_words())

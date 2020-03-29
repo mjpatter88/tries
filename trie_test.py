@@ -24,6 +24,17 @@ def test_a_add_additional():
 
     assert set(t.get_words()) == set(word_list)
 
+def test_a_add_additional_bob():
+    word_list = ['a', 'add', 'additional', 'bob']
+    t = Trie(word_list)
+
+    assert t.root.nodes['a'].terminal == True
+    assert t.root.nodes['a'].nodes['d'].terminal == False
+    assert t.root.nodes['a'].nodes['d'].nodes['d'].terminal == True
+    assert t.root.nodes['b'].nodes['o'].nodes['b'].terminal == True
+
+    assert set(t.get_words()) == set(word_list)
+
 def test_word_list():
     word_list = []
     with open('words_small.txt') as in_file:
