@@ -1,3 +1,4 @@
+import time
 from functools import lru_cache
 from trie import Trie
 
@@ -57,20 +58,17 @@ def iterative_mat(word1, word2):
     return matrix[len(word2)][len(word1)]
 
 # http://stevehanov.ca/blog/?id=114
-def trie(word, word_list, max_dist):
-    import time
-    t = Trie(word_list)
+# https://cslu.ohsu.edu/~bedricks/courses/cs655/pdf/w10_lec1.pdf
+# https://github.com/umbertogriffo/Trie
+def trie_lev(word, trie, max_dist):
 
-    start = time.time()
     cur_row = [x for x in range(len(word)+1)]
     results = []
 
     # try each branch from the root
-    for letter, node in t.root.nodes.items():
+    for letter, node in trie.root.nodes.items():
         trie_search(node, letter, word, cur_row, results, max_dist, letter)
 
-    end = time.time()
-    print(f"Time: {(end-start) * 1000} ms")
     return results
 
 def trie_search(node, letter, word, prev_row, results, max_dist, prefix):
@@ -97,23 +95,19 @@ def trie_search(node, letter, word, prev_row, results, max_dist, prefix):
             trie_search(new_node, new_letter, word, cur_row, results, max_dist, prefix+new_letter)
 
 
+MAX_DIST = 2
 def distance(filename):
-    import time
 
     with open(filename) as in_file:
         lines = [line.strip() for line in in_file.readlines()]
+    trie = Trie(lines)
 
-    start = time.time()
-    word1 = 'a'
-    word1 = 'kitten'
-
-    # for line in lines:
-    #     result = iterative_mat(word1, line)
-        # print(f"{line} - {result}")
-    results = trie(word1, lines, 3)
-    print(results)
-    end = time.time()
-    print(f"Time: {(end-start) * 1000} ms")
+    while True:
+        word = input('Enter a word to find its fuzzy matches: ')
+        start = time.time()
+        print(trie_lev(word, trie, MAX_DIST))
+        end = time.time()
+        print(f"Time: {(end-start) * 1000} ms")
 
 if __name__ == '__main__':
     distance('words.txt')
