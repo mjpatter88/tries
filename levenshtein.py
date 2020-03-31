@@ -24,9 +24,9 @@ def dynamic_rec(word1, word2, index1, index2):
     # Cost of substitution is 0 if letters match, 1 otherwise
     sub_cost = 0 if word1[index1] == word2[index2] else 1
     return min([
-        basic_rec(word1, word2, index1+1, index2) + 1, # insertion
-        basic_rec(word1, word2, index1, index2+1) + 1, # deletion
-        basic_rec(word1, word2, index1+1, index2+1) + sub_cost, # substitution (if necessary)
+        dynamic_rec(word1, word2, index1+1, index2) + 1, # insertion
+        dynamic_rec(word1, word2, index1, index2+1) + 1, # deletion
+        dynamic_rec(word1, word2, index1+1, index2+1) + sub_cost, # substitution (if necessary)
     ])
 
 # Use this approach: https://en.wikipedia.org/wiki/Levenshtein_distance#Iterative_with_full_matrix
